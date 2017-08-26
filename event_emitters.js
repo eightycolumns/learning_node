@@ -7,12 +7,11 @@ const server = http.createServer((request, response) => {
 
   const eventEmitter = new EventEmitter();
 
-  eventEmitter.once('foo', () => {
-    response.write('Handling event "foo".\n');
+  eventEmitter.on('error', e => {
+    response.write('Error: ' + e.message);
   });
 
-  eventEmitter.emit('foo');
-  eventEmitter.emit('foo');
+  eventEmitter.emit('error', new Error('Epic Fail'));
 
   response.end();
 });
