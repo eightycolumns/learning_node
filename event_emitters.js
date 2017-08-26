@@ -7,10 +7,11 @@ const server = http.createServer((request, response) => {
 
   const eventEmitter = new EventEmitter();
 
-  eventEmitter.on('foo', () => {
+  eventEmitter.once('foo', () => {
     response.write('Handling event "foo".\n');
   });
 
+  eventEmitter.emit('foo');
   eventEmitter.emit('foo');
 
   response.end();
