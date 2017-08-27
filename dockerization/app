@@ -1,0 +1,44 @@
+#!/bin/bash
+
+main() {
+  local -r command=$1
+
+  if [ "${command}" == 'start' ]; then
+    start_node_app
+  elif [ "${command}" == 'stop' ]; then
+    stop_node_app
+  fi
+}
+
+start_node_app() {
+  local -r IMAGE=eightycolumns/node_app:1.0.0
+  local -r URL=http://localhost:8080
+
+  if node_app_running; then
+    echo "Node app already running. See ${URL}."
+  else
+    printf 'Starting node app... '
+
+    docker run \
+      --detach \
+      --env NODE_ENV=production \
+      --name node_app \
+      --publish 8080:8080 \
+      "${IMAGE}" > /dev/null && printf "Node app started. See ${URL}.\n"
+  fi
+}
+
+node_app_running() {
+  docker ps -af name=node_app | awk '{print $NF}' | grep -qw node_app
+}
+
+stop_node_app() {
+  if node_app_running; then
+    printf 'Stopping node app... '
+    docker rm -fv node_app > /dev/null && printf 'Node app stopped.\n'
+  else
+    echo 'Node app not running.'
+  fi
+}
+
+[ "${BASH_SOURCE[0]}" == "$0" ] && main "$@"
